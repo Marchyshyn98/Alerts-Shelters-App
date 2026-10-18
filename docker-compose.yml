@@ -1,0 +1,58 @@
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-alerts}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-alerts}
+      POSTGRES_DB: ${POSTGRES_DB:-alerts_shelters}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    environment:
+      POSTGRES_DATABASE_URL: postgres://${POSTGRES_USER:-alerts}:${POSTGRES_PASSWORD:-alerts}@db:5432/${POSTGRES_DB:-alerts_shelters}
+      API_PORT: 4000
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000}
+    ports:
+      - "4000:4000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  worker:
+    build:
+      context: .
+      dockerfile: apps/worker/Dockerfile
+    environment:
+      POSTGRES_DATABASE_URL: postgres://${POSTGRES_USER:-alerts}:${POSTGRES_PASSWORD:-alerts}@db:5432/${POSTGRES_DB:-alerts_shelters}
+      ALERTS_API_TOKEN: ${ALERTS_API_TOKEN}
+      POLL_INTERVAL_MS: ${POLL_INTERVAL_MS:-30000}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:4000}
+    environment:
+      API_INTERNAL_URL: http://api:4000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+volumes:
+  pgdata:

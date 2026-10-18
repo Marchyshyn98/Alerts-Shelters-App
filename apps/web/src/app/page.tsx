@@ -1,0 +1,73 @@
+"use client";
+
+import type { NearbyShelter } from "@alerts-shelters/shared";
+import { useEffect, useState } from "react";
+import { AlertBadge } from "@/components/AlertBadge";
+import { Map } from "@/components/Map";
+import { useAlertsStream } from "@/hooks/useAlertsStream";
+import { useGeolocation } from "@/hooks/useGeolocation";
+import { api } from "@/lib/api";
+
+const LVIV = { lat: 49.8397, lon: 24.0297 };
+
+export default function HomePage() {
+  const { alerts, status, error: alertsError } = useAlertsStream();
+  const geo = useGeolocation();
+  const [nearby, setNearby] = useState<NearbyShelter[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!geo.coords) return;
+    api
+      .nearbyShelters({ ...geo.coords, radius: 2000, limit: 20 })
+      .then(setNearby)
+      .catch((e: Error) => setError(e.message));
+  }, [geo.coords]);
+
+  return (
+    <>
+      <h1>Активні тривоги</h1>
+      {alertsError && <p className="muted">Не вдалося завантажити тривоги: {alertsError}</p>}
+      {status === "error" && <p className="muted">Немає з’єднання з сервером, перепідключаємось…</p>}
+      <div className="badges">
+        {status === "loading" && alerts.length === 0 ? (
+          <span className="muted">Завантаження…</span>
+        ) : alerts.length === 0 ? (
+          <span className="muted">Активних тривог немає</span>
+        ) : (
+          alerts.map((a) => <AlertBadge key={a.id} alert={a} />)
+        )}
+      </div>
+
+      <div className="form">
+        <button onClick={geo.request} disabled={geo.loading}>
+          {geo.loading ? "Визначаємо…" : "Знайти укриття поруч"}
+        </button>
+        {geo.error && <span className="muted">{geo.error}</span>}
+        {error && <span className="muted">{error}</span>}
+      </div>
+
+      <Map
+        center={geo.coords ?? LVIV}
+        zoom={geo.coords ? 14 : 12}
+        me={geo.coords}
+        points={nearby.flatMap((s) =>
+          s.lat !== null && s.lon !== null
+            ? [{ id: s.id, lat: s.lat, lon: s.lon, label: `${s.type}: ${s.address}` }]
+            : [],
+        )}
+      />
+
+      {nearby.length > 0 && (
+        <ul className="list">
+          {nearby.map((s) => (
+            <li key={s.id}>
+              <strong>{Math.round(s.distanceM)} м</strong> · {s.type} · {s.address}
+              {s.capacity ? <span className="muted"> · до {s.capacity} осіб</span> : null}
+            </li>
+          ))}
+        </ul>
+      )}
+    </>
+  );
+}

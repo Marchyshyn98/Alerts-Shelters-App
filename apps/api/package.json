@@ -1,0 +1,36 @@
+{
+  "name": "@alerts-shelters/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --env-file-if-exists=../../.env src/index.ts",
+    "build": "tsup",
+    "start": "node dist/index.js",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@alerts-shelters/db": "workspace:*",
+    "@alerts-shelters/shared": "workspace:*",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.7",
+    "drizzle-orm": "^0.38.3",
+    "express": "^5.3.0",
+    "pg": "^8.23.1",
+    "postgres": "^3.4.5",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@alerts-shelters/tsconfig": "workspace:*",
+    "@types/cors": "^2.8.19",
+    "@types/dotenv": "^8.2.3",
+    "@types/express": "^5.0.6",
+    "@types/pg": "^8.23.1",
+    "@types/supertest": "^7.2.1",
+    "supertest": "^7.3.1",
+    "tsup": "^8.3.5",
+    "tsx": "^4.19.2",
+    "vitest": "^2.1.8"
+  }
+}

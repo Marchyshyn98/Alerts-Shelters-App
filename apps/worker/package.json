@@ -1,0 +1,28 @@
+{
+  "name": "@alerts-shelters/worker",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --env-file-if-exists=../../.env src/index.ts",
+    "build": "tsup",
+    "start": "node dist/index.js",
+    "import:shelters": "tsx --env-file-if-exists=../../.env src/import-shelters.ts",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@alerts-shelters/db": "workspace:*",
+    "@alerts-shelters/shared": "workspace:*",
+    "csv-parse": "^5.6.0",
+    "drizzle-orm": "^0.38.3",
+    "postgres": "^3.4.5",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@alerts-shelters/tsconfig": "workspace:*",
+    "tsup": "^8.3.5",
+    "tsx": "^4.19.2",
+    "vitest": "^2.1.8"
+  }
+}

@@ -1,0 +1,4 @@
+{
+  "extends": "@alerts-shelters/tsconfig/base.json",
+  "include": ["src"]
+}
