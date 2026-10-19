@@ -4,14 +4,16 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// Create a new instance of the Pool class with the database configuration
-const pool = new Pool({
+export const dbConfig = {
   user: process.env.POSTGRES_USER,
   host: process.env.POSTGRES_HOST,
   database: process.env.POSTGRES_DB,
   password: process.env.POSTGRES_PASSWORD,
   port: Number(process.env.POSTGRES_PORT) || 5432,
-});
+}
+
+// Create a new instance of the Pool class with the database configuration
+const pool = new Pool(dbConfig);
 
 pool.on("connect", () => {
   console.log("Connected to the database");

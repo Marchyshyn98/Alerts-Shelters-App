@@ -23,7 +23,7 @@ async function get<T>(path: string, schema: z.ZodType<T>, params?: object): Prom
   }
 
   const res = await fetch(url, { cache: "no-store" });
-  console.log(res);
+  // console.log(res);
   if (!res.ok) {
     console.log(res);
     const problem = await res.json().catch(() => null);
