@@ -19,14 +19,14 @@ export default function HomePage() {
   useEffect(() => {
     if (!geo.coords) return;
     api
-      .nearbyShelters({ ...geo.coords, radius: 2000, limit: 20 })
+      .nearbyShelters({ ...geo.coords, radius: 2000, limit: 50 })
       .then(setNearby)
       .catch((e: Error) => setError(e.message));
   }, [geo.coords]);
 
   return (
     <>
-      <h1>Активні тривоги</h1>
+      <h1>Активні тривоги в реальному часі</h1>
       {alertsError && <p className="muted">Не вдалося завантажити тривоги: {alertsError}</p>}
       {status === "error" && <p className="muted">Немає з’єднання з сервером, перепідключаємось…</p>}
       <div className="badges">

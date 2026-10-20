@@ -22,18 +22,18 @@ export async function syncAlerts(db: Db, source: AlertSourceAdapter): Promise<Sy
 
     const opened = active.length
       ? await tx
-          .insert(alerts)
-          .values(
-            active.map((a) => ({
-              regionId: a.regionId,
-              type: a.type,
-              source: a.source,
-              externalId: a.externalId,
-              startedAt: a.startedAt,
-            })),
-          )
-          .onConflictDoNothing({ target: [alerts.source, alerts.externalId] })
-          .returning({ id: alerts.id })
+        .insert(alerts)
+        .values(
+          active.map((a) => ({
+            regionId: a.regionId,
+            type: a.type,
+            source: a.source,
+            externalId: a.externalId,
+            startedAt: a.startedAt,
+          })),
+        )
+        .onConflictDoNothing({ target: [alerts.source, alerts.externalId] })
+        .returning({ id: alerts.id })
       : [];
 
     const activeIds = active.map((a) => a.externalId);
@@ -48,6 +48,12 @@ export async function syncAlerts(db: Db, source: AlertSourceAdapter): Promise<Sy
         ),
       )
       .returning({ id: alerts.id });
+
+    // NOTIFY у транзакції доставляється лише після COMMIT:
+    // API не прочитає незафіксованих даних, а при ROLLBACK сповіщення не буде
+    if (opened.length || closed.length) {
+      await tx.execute(sql`NOTIFY alerts_changed`);
+    }
 
     return {
       source: source.name,
