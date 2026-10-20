@@ -1,7 +1,7 @@
 "use client";
 
 import type { NearbyShelter } from "@alerts-shelters/shared";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AlertBadge } from "@/components/AlertBadge";
 import { Map } from "@/components/Map";
 import { useAlertsStream } from "@/hooks/useAlertsStream";
@@ -15,6 +15,17 @@ export default function HomePage() {
   const geo = useGeolocation();
   const [nearby, setNearby] = useState<NearbyShelter[]>([]);
   const [error, setError] = useState<string | null>(null);
+
+  // маркери nearby shelters на карті
+  const points = useMemo(
+    () =>
+      nearby.flatMap((s) =>
+        s.lat !== null && s.lon !== null
+          ? [{ id: s.id, lat: s.lat, lon: s.lon, label: `${s.type}: ${s.address}` }]
+          : [],
+      ),
+    [nearby],
+  );
 
   useEffect(() => {
     if (!geo.coords) return;
@@ -51,11 +62,7 @@ export default function HomePage() {
         center={geo.coords ?? LVIV}
         zoom={geo.coords ? 14 : 12}
         me={geo.coords}
-        points={nearby.flatMap((s) =>
-          s.lat !== null && s.lon !== null
-            ? [{ id: s.id, lat: s.lat, lon: s.lon, label: `${s.type}: ${s.address}` }]
-            : [],
-        )}
+        points={points}
       />
 
       {nearby.length > 0 && (

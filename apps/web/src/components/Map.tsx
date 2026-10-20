@@ -50,8 +50,8 @@ export function Map({ center, zoom = 12, points, me }: MapProps) {
   }, []);
 
   useEffect(() => {
-    map.current?.flyTo({ center: [center.lon, center.lat] });
-  }, [center.lat, center.lon]);
+    map.current?.flyTo({ center: [center.lon, center.lat], zoom });
+  }, [center.lat, center.lon, zoom]);
 
   useEffect(() => {
     const m = map.current;
