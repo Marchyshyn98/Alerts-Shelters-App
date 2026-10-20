@@ -16,6 +16,14 @@ export default function HomePage() {
   const [nearby, setNearby] = useState<NearbyShelter[]>([]);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (!geo.coords) return;
+    api
+      .nearbyShelters({ ...geo.coords, radius: 2000, limit: 100 })
+      .then(setNearby)
+      .catch((e: Error) => setError(e.message));
+  }, [geo.coords]);
+
   // маркери nearby shelters на карті
   const points = useMemo(
     () =>
@@ -26,14 +34,6 @@ export default function HomePage() {
       ),
     [nearby],
   );
-
-  useEffect(() => {
-    if (!geo.coords) return;
-    api
-      .nearbyShelters({ ...geo.coords, radius: 2000, limit: 50 })
-      .then(setNearby)
-      .catch((e: Error) => setError(e.message));
-  }, [geo.coords]);
 
   return (
     <>
@@ -60,7 +60,7 @@ export default function HomePage() {
 
       <Map
         center={geo.coords ?? LVIV}
-        zoom={geo.coords ? 14 : 12}
+        zoom={geo.coords ? 17 : 12}
         me={geo.coords}
         points={points}
       />

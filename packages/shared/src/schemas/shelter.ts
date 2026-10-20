@@ -20,7 +20,7 @@ export const NearbySheltersQuerySchema = z.object({
   lat: z.coerce.number().min(-90).max(90),
   lon: z.coerce.number().min(-180).max(180),
   radius: z.coerce.number().int().positive().max(20_000).default(2_000),
-  limit: z.coerce.number().int().positive().max(100).default(20),
+  limit: z.coerce.number().int().positive().max(100).default(30),
 });
 
 export const SheltersQuerySchema = z.object({
