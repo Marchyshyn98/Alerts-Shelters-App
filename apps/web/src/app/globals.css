@@ -1,3 +1,8 @@
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+
 :root {
   --bg: #f8fafc;
   --fg: #0f172a;
@@ -33,14 +38,9 @@ a {
   color: var(--accent);
 }
 
-.nav {
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border);
+.nav,
+.footer {
   background: var(--card);
-  flex-wrap: wrap;
 }
 
 .nav__brand {
@@ -50,7 +50,7 @@ a {
   margin-right: auto;
 }
 
-.main {
+.container-main {
   max-width: 1100px;
   margin: 0 auto;
   padding: 16px;
@@ -134,3 +134,5 @@ td {
   padding: 6px 8px;
   border-bottom: 1px solid var(--border);
 }
+
+.footer {}
