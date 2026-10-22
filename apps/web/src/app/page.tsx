@@ -15,6 +15,7 @@ export default function HomePage() {
   const geo = useGeolocation();
   const [nearby, setNearby] = useState<NearbyShelter[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [inputText, setInputText] = useState("");
 
   useEffect(() => {
     if (!geo.coords) return;
@@ -35,9 +36,27 @@ export default function HomePage() {
     [nearby],
   );
 
+  const filteredAlerts = useMemo(() => {
+    const q = inputText.trim().toLowerCase();
+    if (!q) return alerts;
+    return alerts.filter((a) => a.regionName.toLowerCase().includes(q));
+  }, [alerts, inputText]);
+
+
   return (
     <>
       <h1>Активні тривоги</h1>
+
+      <div className="form !mt-10 !mb-8">
+        <input
+          type="text"
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
+          placeholder="Пошук району (міста, громади)"
+          className="w-full sm:w-1/2 lg:w-1/3"
+        />
+      </div>
+
       {alertsError && <p className="muted">Не вдалося завантажити тривоги: {alertsError}</p>}
       {status === "error" && <p className="muted">Немає з’єднання з сервером, перепідключаємось…</p>}
       <div className="badges">
@@ -45,8 +64,10 @@ export default function HomePage() {
           <span className="muted">Завантаження…</span>
         ) : alerts.length === 0 ? (
           <span className="muted">Активних тривог немає</span>
+        ) : filteredAlerts.length === 0 ? (
+          <span className="muted">За запитом "{inputText}" тривог не знайдено</span>
         ) : (
-          alerts.map((a) => <AlertBadge key={a.id} alert={a} />)
+          filteredAlerts.map((a) => <AlertBadge key={a.id} alert={a} />)
         )}
       </div>
 
