@@ -2,6 +2,7 @@ import express from "express";
 import { getActiveAlerts, getAlertsStream, getAllAlerts } from "../controllers/alertController"
 import { getAllRegions } from "../controllers/regionController";
 import { getAllShelters, getShelterDetails, getSheltersNearby } from "../controllers/shelterController";
+import { getStatsSummary } from "../controllers/statsController";
 
 const router = express.Router();
 
@@ -16,6 +17,6 @@ router.get('/shelters', getAllShelters);
 router.get('/shelters/nearby', getSheltersNearby);
 router.get('/shelters/:id', getShelterDetails);
 
-
+router.get('/stats/summary', getStatsSummary);
 
 export default router;

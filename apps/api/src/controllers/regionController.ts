@@ -9,11 +9,10 @@ export const getAllRegions = async (req: Request, res: Response, next: NextFunct
             parent: str(req.query.parent)
         });
         // console.log("Total regions: ", allRegions.length)
-        res.status(200).json({
-            data: allRegions
-        });
+        res.status(200).json(allRegions);
     } catch (error) {
         next(error);
     }
 }
+
 

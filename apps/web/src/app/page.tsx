@@ -37,7 +37,7 @@ export default function HomePage() {
 
   return (
     <>
-      <h1>Активні тривоги в реальному часі</h1>
+      <h1>Активні тривоги</h1>
       {alertsError && <p className="muted">Не вдалося завантажити тривоги: {alertsError}</p>}
       {status === "error" && <p className="muted">Немає з’єднання з сервером, перепідключаємось…</p>}
       <div className="badges">

@@ -13,12 +13,13 @@ export const StatsSummarySchema = z.object({
       regionName: z.string(),
       alerts: z.number().int(),
       totalMinutes: z.number(),
+      averageMinutes: z.number()
     }),
   ),
   sheltersByCity: z.array(
     z.object({
       city: z.string().nullable(),
-      shelters: z.number().int(),
+      shelters: z.number().int()
     }),
   ),
 });
