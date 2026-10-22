@@ -20,10 +20,14 @@ export default function HomePage() {
   useEffect(() => {
     if (!geo.coords) return;
     api
-      .nearbyShelters({ ...geo.coords, radius: 2000, limit: 100 })
+      .nearbyShelters({ ...geo.coords, radius: 2000, limit: 20 })
       .then(setNearby)
       .catch((e: Error) => setError(e.message));
   }, [geo.coords]);
+
+  useEffect(() => {
+    geo.request();
+  }, []);
 
   // маркери nearby shelters на карті
   const points = useMemo(
@@ -45,34 +49,10 @@ export default function HomePage() {
 
   return (
     <>
-      <h1>Активні тривоги</h1>
-
-      <div className="form !mt-10 !mb-8">
-        <input
-          type="text"
-          value={inputText}
-          onChange={(e) => setInputText(e.target.value)}
-          placeholder="Пошук району (міста, громади)"
-          className="w-full sm:w-1/2 lg:w-1/3"
-        />
-      </div>
-
-      {alertsError && <p className="muted">Не вдалося завантажити тривоги: {alertsError}</p>}
-      {status === "error" && <p className="muted">Немає з’єднання з сервером, перепідключаємось…</p>}
-      <div className="badges">
-        {status === "loading" && alerts.length === 0 ? (
-          <span className="muted">Завантаження…</span>
-        ) : alerts.length === 0 ? (
-          <span className="muted">Активних тривог немає</span>
-        ) : filteredAlerts.length === 0 ? (
-          <span className="muted">За запитом "{inputText}" тривог не знайдено</span>
-        ) : (
-          filteredAlerts.map((a) => <AlertBadge key={a.id} alert={a} />)
-        )}
-      </div>
+      <h1>Найближчі укриття</h1>
 
       <div className="form">
-        <button onClick={geo.request} disabled={geo.loading}>
+        <button onClick={geo.request} disabled={geo.loading} className="mb-3">
           {geo.loading ? "Визначаємо…" : "Знайти укриття поруч"}
         </button>
         {geo.error && <span className="muted">{geo.error}</span>}
@@ -96,6 +76,32 @@ export default function HomePage() {
           ))}
         </ul>
       )}
+
+      <h2>Активні тривоги</h2>
+      <div className="form !mb-7">
+        <input
+          type="text"
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
+          placeholder="Пошук району (міста, громади)"
+          className="w-full sm:w-1/2 lg:w-1/3"
+        />
+      </div>
+      {alertsError && <p className="muted">Не вдалося завантажити тривоги: {alertsError}</p>}
+      {status === "error" && <p className="muted">Немає з’єднання з сервером, перепідключаємось…</p>}
+      <div className="badges">
+        {status === "loading" && alerts.length === 0 ? (
+          <span className="muted">Завантаження…</span>
+        ) : alerts.length === 0 ? (
+          <span className="muted">Активних тривог немає</span>
+        ) : filteredAlerts.length === 0 ? (
+          <span className="muted">За запитом "{inputText}" тривог не знайдено</span>
+        ) : (
+          filteredAlerts.map((a) => <AlertBadge key={a.id} alert={a} />)
+        )}
+      </div>
+
+
     </>
   );
 }
