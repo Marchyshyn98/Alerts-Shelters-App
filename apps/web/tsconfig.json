@@ -7,7 +7,7 @@
     "incremental": true,
     "plugins": [{ "name": "next" }],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*", "./assets/*"]
     }
   },
   "include": ["next-env.d.ts", "src", ".next/types/**/*.ts"],

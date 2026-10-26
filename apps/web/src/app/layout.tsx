@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Nav } from "@/components/Nav";
 import "./globals.css";
+import '@fortawesome/fontawesome-free/css/all.min.css';
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
@@ -14,7 +15,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="uk">
       <body>
         <Nav />
-        <main className="main pt-5 pb-15">
+        <main className="main py-5">
           <div className="container-main">
             {children}
           </div>

@@ -1,4 +1,6 @@
 import { api } from "@/lib/api";
+import Button from "@/components/Button";
+import Input from "@/components/Input";
 
 export const dynamic = "force-dynamic";
 
@@ -12,11 +14,11 @@ export default async function SheltersPage({ searchParams }: Props) {
 
   return (
     <>
-      <h1>Пошук укриттів (Львів, Івано-Франківськ)</h1>
-      <form className="form">
-        <input name="city" placeholder="Місто (Львів)" />
-        <input name="address" placeholder="Вулиця" />
-        <button type="submit">Шукати</button>
+      <h1>Пошук укриттів</h1>
+      <form className="w-full flex gap-3 flex-wrap mt-3 mb-10 mx-0">
+        <Input name="city" placeholder="Місто (Львів)" />
+        <Input name="address" placeholder="Вулиця" />
+        <Button type="submit" className="rounded-none">Шукати</Button>
       </form>
 
       {shelters === null ? (

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { StatsSummary } from "@alerts-shelters/shared";
+import Button from "./Button";
 
 type RegionStat = StatsSummary["byRegion"][number];
 type Metric = "alerts" | "totalMinutes" | "averageMinutes";
@@ -26,29 +27,28 @@ export function RegionAlertsChart({ data, days }: { data: StatsSummary["byRegion
   const max = sorted[0]?.[metric] || 1;
 
   return (
-    <section className="mt-8 rounded-lg border border-(--border) bg-(--card) p-4">
+    <section className="mt-8 rounded-lg bg-(--lightgrey) p-4 shadow-lg">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="m-0">Тривоги за регіонами</h2>
-          <p className="m-0 text-sm text-(--muted)">
+          <p className="m-0 text-sm text-(--darkgrey)">
             {current.label} за {days} днів
             {sorted.length > TOP_N && !showAll ? ` · топ-${TOP_N} з ${sorted.length}` : ""}
           </p>
         </div>
 
-        <div role="group" aria-label="Метрика" className="inline-flex flex-wrap rounded-lg border border-(--border) p-1">
+        <div role="group" aria-label="Метрика" className="inline-flex flex-wrap rounded-lg p-1">
           {METRICS.map((m) => (
-            <button
+            <Button
               key={m.key}
-              type="button"
               aria-pressed={m.key === metric}
               onClick={() => setMetric(m.key)}
-              className={`rounded-md !border-0 px-3 py-1 text-sm ${
-                m.key === metric ? "!bg-(--accent) !text-white" : "!bg-(--card) !text-(--accent) hover:!bg-(--border)"
+              className={`px-3 py-1 text-sm ${
+                m.key === metric ? "!bg-(--dark) !text-white" : "!bg-transparent !text-(--dark)"
               }`}
             >
               {m.label}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
@@ -67,8 +67,8 @@ export function RegionAlertsChart({ data, days }: { data: StatsSummary["byRegion
                 onPointerLeave={() => setHovered(null)}
                 onFocus={() => setHovered(r.regionId)}
                 onBlur={() => setHovered(null)}
-                className={`relative grid grid-cols-[minmax(0,10rem)_1fr] items-center gap-3 rounded-md px-2 py-1 outline-none sm:grid-cols-[14rem_1fr] ${
-                  active ? "bg-(--border)/50" : ""
+                className={`relative grid grid-cols-[minmax(0,10rem)_1fr] items-center gap-3 rounded-sm px-2 py-1 outline-none sm:grid-cols-[14rem_1fr] ${
+                  active ? "bg-(--white)" : ""
                 }`}
               >
                 <span className="truncate text-sm" title={r.regionName}>
@@ -76,7 +76,7 @@ export function RegionAlertsChart({ data, days }: { data: StatsSummary["byRegion
                 </span>
                 <span className="flex items-center gap-2">
                   <span
-                    className="h-5 min-w-0.5 rounded-r bg-(--accent) transition-[width] duration-300"
+                    className="h-5 min-w-0.5 rounded-r bg-(--dark) transition-[width] duration-300"
                     style={{ width: `calc(${(r[metric] / max) * 100}% - 4.5rem)` }}
                   />
                   <span className="shrink-0 text-sm tabular-nums">{current.format(r)}</span>
@@ -85,12 +85,12 @@ export function RegionAlertsChart({ data, days }: { data: StatsSummary["byRegion
                 {active ? (
                   <div
                     role="tooltip"
-                    className="pointer-events-none absolute right-2 bottom-full z-10 mb-1 rounded-md border border-(--border) bg-(--card) px-3 py-2 text-xs shadow-lg"
+                    className="pointer-events-none absolute right-2 bottom-full z-10 mb-1 rounded-sm bg-(--white) px-3 py-2 text-xs shadow-lg"
                   >
                     <div className="mb-1 font-semibold">{r.regionName}</div>
                     {METRICS.map((m) => (
                       <div key={m.key} className="flex justify-between gap-4">
-                        <span className="text-(--muted)">{m.label}</span>
+                        <span className="text-(--darkgrey)">{m.label}</span>
                         <span className={`tabular-nums ${m.key === metric ? "font-semibold" : ""}`}>{m.format(r)}</span>
                       </div>
                     ))}
@@ -103,13 +103,12 @@ export function RegionAlertsChart({ data, days }: { data: StatsSummary["byRegion
       )}
 
       {sorted.length > TOP_N ? (
-        <button
-          type="button"
+        <Button
           onClick={() => setShowAll((v) => !v)}
-          className="mt-3 !border-0 !bg-transparent !p-0 text-sm !text-(--accent) hover:underline"
+          className="mt-3 text-sm"
         >
           {showAll ? `Показати топ-${TOP_N}` : `Показати всі (${sorted.length})`}
-        </button>
+        </Button>
       ) : null}
     </section>
   );

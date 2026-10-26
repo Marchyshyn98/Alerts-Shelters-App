@@ -7,6 +7,8 @@ import { Map } from "@/components/Map";
 import { useAlertsStream } from "@/hooks/useAlertsStream";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { api } from "@/lib/api";
+import Button from "@/components/Button";
+import Input from "@/components/Input";
 
 const LVIV = { lat: 49.8397, lon: 24.0297 };
 
@@ -52,9 +54,9 @@ export default function HomePage() {
       <h1>Найближчі укриття</h1>
 
       <div className="form">
-        <button onClick={geo.request} disabled={geo.loading} className="mb-3">
+        <Button onClick={geo.request} disabled={geo.loading} className="mb-3">
           {geo.loading ? "Визначаємо…" : "Знайти укриття поруч"}
-        </button>
+        </Button>
         {geo.error && <span className="muted">{geo.error}</span>}
         {error && <span className="muted">{error}</span>}
       </div>
@@ -77,16 +79,14 @@ export default function HomePage() {
         </ul>
       )}
 
-      <h2>Активні тривоги</h2>
-      <div className="form !mb-7">
-        <input
-          type="text"
-          value={inputText}
-          onChange={(e) => setInputText(e.target.value)}
-          placeholder="Пошук району (міста, громади)"
-          className="w-full sm:w-1/2 lg:w-1/3"
-        />
-      </div>
+      <h2 className="mt-15">Активні тривоги</h2>
+      <Input
+        type="text"
+        value={inputText}
+        onChange={(e) => setInputText(e.target.value)}
+        placeholder="Пошук району, міста, громади"
+        className="w-full sm:w-1/2 lg:w-1/3 mb-7"
+      />
       {alertsError && <p className="muted">Не вдалося завантажити тривоги: {alertsError}</p>}
       {status === "error" && <p className="muted">Немає з’єднання з сервером, перепідключаємось…</p>}
       <div className="badges">

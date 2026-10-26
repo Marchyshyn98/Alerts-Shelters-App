@@ -5,7 +5,7 @@ export type Period = (typeof PERIODS)[number];
 
 export function PeriodSwitcher({ value }: { value: Period }) {
   return (
-    <div role="group" aria-label="Період" className="inline-flex rounded-lg border border-(--border) bg-(--card) p-1">
+    <div role="group" aria-label="Період" className="inline-flex rounded-lg">
       {PERIODS.map((days) => {
         const active = days === value;
         return (
@@ -13,8 +13,8 @@ export function PeriodSwitcher({ value }: { value: Period }) {
             key={days}
             href={`?days=${days}`}
             aria-current={active ? "page" : undefined}
-            className={`rounded-md px-3 py-1 text-sm no-underline ${
-              active ? "bg-(--accent) !text-white" : "text-(--fg) hover:bg-(--border)"
+            className={`rounded-sm px-3 py-1 text-sm font-semibold tracking-[0.015em] no-underline ${
+              active ? "bg-(--dark) !text-white" : "text-(--dark)"
             }`}
           >
             {days} днів

@@ -8,10 +8,10 @@ function formatMinutes(minutes: number) {
 
 function Kpi({ label, value, hint, accent }: { label: string; value: string; hint?: string; accent?: boolean }) {
   return (
-    <div className="rounded-lg border border-(--border) bg-(--card) p-4">
-      <div className="text-sm text-(--muted)">{label}</div>
-      <div className={`mt-1 text-3xl font-bold tabular-nums ${accent ? "text-(--danger)" : ""}`}>{value}</div>
-      {hint ? <div className="mt-1 text-xs text-(--muted)">{hint}</div> : null}
+    <div className="rounded-lg bg-(--lightgrey) p-4 shadow-lg">
+      <div className="text-sm text-(--darkgrey)">{label}</div>
+      <div className={`mt-1 text-3xl font-bold tabular-nums ${accent ? "text-(--crymson)" : ""}`}>{value}</div>
+      {hint ? <div className="mt-1 text-xs text-(--darkgrey)">{hint}</div> : null}
     </div>
   );
 }

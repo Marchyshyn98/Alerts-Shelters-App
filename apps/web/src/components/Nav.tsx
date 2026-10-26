@@ -1,15 +1,23 @@
 import Link from "next/link";
+import Image from "next/image";
+import logo from "@/alerts-shelters-logo.png";
 
 export function Nav() {
   return (
-    <nav className="nav py-3 px-4">
-      <div className="container-main flex gap-4 items-center flex-wrap">
-        <Link href="/" className="nav__brand">
-          Тривоги та укриття
+    <nav className="nav">
+      <div className="container-main flex items-center flex-wrap justify-between">
+        <Link href="/">
+          <Image
+            src={logo}
+            className="w-10 h-10"
+            alt="logo"
+          />
         </Link>
-        <Link href="/shelters">Укриття</Link>
-        <Link href="/stats">Статистика</Link>
-        <Link href="/sources">Джерела</Link>
+        <div className="flex gap-5">
+          <Link href="/">Головна</Link>
+          <Link href="/stats">Статистика</Link>
+          <Link href="/shelters">Укриття</Link>
+        </div>
       </div>
     </nav>
   );

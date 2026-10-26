@@ -34,9 +34,9 @@ export function SheltersByCityList({ data }: { data: StatsSummary["sheltersByCit
   const max = Math.max(...rows.map((r) => r.shelters), 1);
 
   return (
-    <section className="mt-8 rounded-lg border border-(--border) bg-(--card) p-4">
+    <section className="mt-8 rounded-lg bg-(--lightgrey) shadow-lg p-4">
       <h2 className="m-0">Укриття за містами</h2>
-      <p className="mt-0 mb-4 text-sm text-(--muted)">
+      <p className="mt-0 mb-4 text-sm text-(--darkgrey)">
         Усього {fmt.format(total)} укриттів у {withCity.length} {plural(withCity.length)}
       </p>
 
@@ -45,7 +45,7 @@ export function SheltersByCityList({ data }: { data: StatsSummary["sheltersByCit
       ) : (
         <table className="w-full">
           <thead>
-            <tr className="text-xs text-(--muted)">
+            <tr className="text-xs text-(--darkgrey)">
               <th className="w-10 font-normal">#</th>
               <th className="font-normal">Місто</th>
               <th className="text-right font-normal">Укриттів</th>
@@ -54,19 +54,19 @@ export function SheltersByCityList({ data }: { data: StatsSummary["sheltersByCit
           </thead>
           <tbody>
             {rows.map((r, i) => (
-              <tr key={r.key} className={r.muted ? "text-(--muted)" : ""}>
-                <td className="text-sm tabular-nums text-(--muted)">{r.muted ? "" : i + 1}</td>
+              <tr key={r.key} className={r.muted ? "text-(--darkgrey)" : ""}>
+                <td className="text-sm tabular-nums text-(--darkgrey)">{r.muted ? "" : i + 1}</td>
                 <td>
                   <div className="text-sm">{r.label}</div>
                   <div className="mt-1 h-1.5 rounded-full bg-(--border)">
                     <div
-                      className={`h-full rounded-full ${r.muted ? "bg-(--muted)" : "bg-(--accent)"}`}
+                      className={`h-full rounded-full ${r.muted ? "bg-(--darkgrey)" : "bg-(--dark)"}`}
                       style={{ width: `${Math.max((r.shelters / max) * 100, 0.5)}%` }}
                     />
                   </div>
                 </td>
                 <td className="text-right text-sm font-semibold tabular-nums">{fmt.format(r.shelters)}</td>
-                <td className="hidden text-right text-sm tabular-nums text-(--muted) sm:table-cell">
+                <td className="hidden text-right text-sm tabular-nums text-(--darkgrey) sm:table-cell">
                   {pct.format(r.shelters / total)}
                 </td>
               </tr>

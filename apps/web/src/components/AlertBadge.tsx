@@ -15,7 +15,7 @@ export function AlertBadge({ alert }: { alert: Alert }) {
   });
   return (
     <span className={`badge badge--${alert.type}`}>
-      <strong>{alert.regionName}</strong> · {LABELS[alert.type]} · з {since}
+      <strong>{alert.regionName}</strong> | {LABELS[alert.type]} | з <b>{since}</b>
     </span>
   );
 }
