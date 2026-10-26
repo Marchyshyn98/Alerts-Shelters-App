@@ -54,7 +54,7 @@ export default function HomePage() {
       <h1>Найближчі укриття</h1>
 
       <div className="form">
-        <Button onClick={geo.request} disabled={geo.loading} className="mb-3">
+        <Button onClick={geo.request} disabled={geo.loading} className="mb-5">
           {geo.loading ? "Визначаємо…" : "Знайти укриття поруч"}
         </Button>
         {geo.error && <span className="muted">{geo.error}</span>}

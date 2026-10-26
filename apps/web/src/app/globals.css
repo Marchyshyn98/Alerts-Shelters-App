@@ -27,6 +27,12 @@ body {
   padding: 16px;
 }
 
+h1 {font-size: 38px;}
+
+h2 {font-size: 32px;}
+
+ul { margin: 0; padding: 0; }
+
 .nav a {
   color: var(--white);
   text-decoration: none;
@@ -108,4 +114,10 @@ td {
 }
 .social ul li a:hover > i {
   color: var(--crymson);
+}
+
+@media(max-width: 576px) {
+  h1 {font-size: 28px;}
+
+  h2 {font-size: 22px;}
 }

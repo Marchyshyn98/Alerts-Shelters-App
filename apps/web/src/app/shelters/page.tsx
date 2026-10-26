@@ -15,9 +15,9 @@ export default async function SheltersPage({ searchParams }: Props) {
   return (
     <>
       <h1>Пошук укриттів</h1>
-      <form className="w-full flex gap-3 flex-wrap mt-3 mb-10 mx-0">
-        <Input name="city" placeholder="Місто (Львів)" />
-        <Input name="address" placeholder="Вулиця" />
+      <form className="w-full flex gap-3 flex-wrap flex-col md:flex-row mt-3 mb-10 mx-0">
+        <Input name="city" placeholder="Місто" className=" w-full md:w-1/3" />
+        <Input name="address" placeholder="Вулиця" className="w-full md:w-1/3" />
         <Button type="submit" className="rounded-none">Шукати</Button>
       </form>
 

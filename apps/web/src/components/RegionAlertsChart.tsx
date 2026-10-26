@@ -71,7 +71,7 @@ export function RegionAlertsChart({ data, days }: { data: StatsSummary["byRegion
                   active ? "bg-(--white)" : ""
                 }`}
               >
-                <span className="truncate text-sm" title={r.regionName}>
+                <span className="truncate text-xs sm:text-sm" title={r.regionName}>
                   {r.regionName}
                 </span>
                 <span className="flex items-center gap-2">
@@ -79,7 +79,7 @@ export function RegionAlertsChart({ data, days }: { data: StatsSummary["byRegion
                     className="h-5 min-w-0.5 rounded-r bg-(--dark) transition-[width] duration-300"
                     style={{ width: `calc(${(r[metric] / max) * 100}% - 4.5rem)` }}
                   />
-                  <span className="shrink-0 text-sm tabular-nums">{current.format(r)}</span>
+                  <span className="shrink-0 text-xs sm:text-sm tabular-nums">{current.format(r)}</span>
                 </span>
 
                 {active ? (

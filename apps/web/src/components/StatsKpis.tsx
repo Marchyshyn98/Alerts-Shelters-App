@@ -22,7 +22,7 @@ export function StatsKpis({ stats }: { stats: StatsSummary }) {
   const averageMinutes = totalAlerts ? totalMinutes / totalAlerts : 0;
 
   return (
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:grid-cols-4">
       <Kpi label="Активних тривог зараз" value={fmt.format(stats.activeAlerts)} accent={stats.activeAlerts > 0} />
       <Kpi
         label="Тривог за період"

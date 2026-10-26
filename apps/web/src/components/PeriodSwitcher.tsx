@@ -5,7 +5,7 @@ export type Period = (typeof PERIODS)[number];
 
 export function PeriodSwitcher({ value }: { value: Period }) {
   return (
-    <div role="group" aria-label="Період" className="inline-flex rounded-lg">
+    <div role="group" aria-label="Період" className="inline-flex rounded-lg mb-5 sm:mb-0">
       {PERIODS.map((days) => {
         const active = days === value;
         return (

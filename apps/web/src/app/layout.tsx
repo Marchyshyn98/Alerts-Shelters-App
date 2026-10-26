@@ -15,7 +15,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="uk">
       <body>
         <Nav />
-        <main className="main py-5">
+        <main className="main py-0 sm:py-5">
           <div className="container-main">
             {children}
           </div>
