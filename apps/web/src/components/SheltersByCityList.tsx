@@ -2,7 +2,7 @@ import type { StatsSummary } from "@alerts-shelters/shared";
 
 const fmt = new Intl.NumberFormat("uk-UA");
 const pct = new Intl.NumberFormat("uk-UA", { style: "percent", maximumFractionDigits: 1 });
-const TOP_N = 10;
+const TOP_N = 15;
 
 type Row = { key: string; label: string; shelters: number; muted?: boolean };
 

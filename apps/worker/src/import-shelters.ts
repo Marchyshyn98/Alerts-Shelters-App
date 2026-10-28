@@ -2,7 +2,8 @@
  * Одноразовий (ідемпотентний) імпорт укриттів з CSV у data/raw.
  * Повторний запуск оновлює наявні записи за (source, external_id).
  *
- *   pnpm import:shelters
+ *   pnpm import:shelters              # усі джерела
+ *   pnpm import:shelters kyiv odesa   # лише вказані, решту не чіпає
  */
 import { createDb, shelters, sql } from "@alerts-shelters/db";
 import { parse } from "csv-parse/sync";
@@ -120,11 +121,215 @@ export function fromLviv(): NewShelter[] {
   });
 }
 
-async function main() {
-  const db = createDb();
-  const batches = { "ivano-frankivsk": fromIvanoFrankivsk(), lviv: fromLviv() };
+const int = (v: string | undefined) => {
+  const n = Number.parseInt(v ?? "", 10);
+  return Number.isFinite(n) ? n : null;
+};
 
-  for (const [source, rows] of Object.entries(batches)) {
+/** "вулиця Будіндустрії , 3" → "вулиця Будіндустрії, 3" */
+const clean = (v: string | undefined) => (v ?? "").replace(/\s+/g, " ").replace(/ ,/g, ",").trim();
+
+/** Поля, які маппер міста бере зі свого CSV; решту заповнює shelter() */
+interface Fields {
+  /** id у джерелі; якщо порожній — хеш типу, адреси й координат */
+  id?: string;
+  type: string | undefined;
+  address: string | undefined;
+  city: string | null;
+  district?: string;
+  capacity?: string;
+  lat?: string;
+  lon?: string;
+}
+
+function shelter(source: string, r: Row, f: Fields): NewShelter {
+  const lat = coord(f.lat);
+  const lon = coord(f.lon);
+  const type = clean(f.type);
+  const address = clean(f.address);
+  return {
+    source,
+    externalId: val(f.id) ?? hash(type, address, lat, lon),
+    type,
+    address,
+    city: f.city,
+    district: val(f.district),
+    community: null,
+    capacity: int(f.capacity),
+    location: lat !== null && lon !== null ? { x: lon, y: lat } : null,
+    raw: r,
+  };
+}
+
+const fromCsv = (file: string, source: string, map: (r: Row) => Fields) => () =>
+  withUniqueIds(readCsv(file).map((r) => shelter(source, r, map(r))));
+
+/**
+ * Спільний формат реєстру ДСНС. У Тернополі частина рядків з міської мапи
+ * (модульні укриття на зупинках) — без dsns_id і району.
+ */
+const fromDsns = (source: string, city: string) =>
+  fromCsv(`${source}_shelters.csv`, source, (r) => ({
+    id: r.dsns_id,
+    type: r.type,
+    address: r.address,
+    city,
+    district: r.district,
+    capacity: r.capacity,
+    lat: r.lat,
+    lon: r.lon,
+  }));
+
+/** "вул. Янтарна, 77-Д, Індустріальний район, Дніпро, ..., Україна" → "вул. Янтарна, 77-Д" */
+function dniproAddress(v: string | undefined) {
+  const parts = (v ?? "").split(",").map((p) => p.trim());
+  const end = parts.findIndex((p) => p.endsWith(" район") || p === "Дніпро");
+  return (end > 0 ? parts.slice(0, end) : parts).join(", ");
+}
+
+/** Тип у джерелі не вказано, лише шар мапи: "Найпростіші укриття ОСББ", "zhyt 3", ... */
+const zhytomyrType = (layer: string | undefined) =>
+  layer?.startsWith("Найпростіші")
+    ? "Найпростіше укриття"
+    : layer?.startsWith("Захисні споруди")
+      ? "Захисна споруда"
+      : "Укриття";
+
+export const SOURCES: Record<string, () => NewShelter[]> = {
+  "ivano-frankivsk": fromIvanoFrankivsk,
+  lviv: fromLviv,
+  cherkasy: fromDsns("cherkasy", "Черкаси"),
+  chernihiv: fromDsns("chernihiv", "Чернігів"),
+  chernivtsi: fromDsns("chernivtsi", "Чернівці"),
+  khmelnytskyi: fromDsns("khmelnytskyi", "Хмельницький"),
+  poltava: fromDsns("poltava", "Полтава"),
+  sumy: fromDsns("sumy", "Суми"),
+  ternopil: fromDsns("ternopil", "Тернопіль"),
+  uzhhorod: fromDsns("uzhhorod", "Ужгород"),
+  dnipro: fromCsv("dnipro_shelters.csv", "dnipro", (r) => ({
+    id: r.id,
+    type: r.type,
+    // short_address заповнений рідко; address — повна адреса з геокодера
+    address: val(r.short_address) ?? dniproAddress(r.address),
+    city: "Дніпро",
+    district: r.district,
+    lat: r.lat,
+    lon: r.lon,
+  })),
+  kharkiv: fromCsv("kharkiv_shelters.csv", "kharkiv", (r) => ({
+    id: r.OBJECTID,
+    // тип укриття не вказано, лише місце: "підвальне приміщення", "підземний перехід", ...
+    type: val(r.BOMBSHELTER_PLACE) ?? "Укриття",
+    address: r.ADDRESS,
+    city: "Харків",
+    district: r.DISTRICT,
+    lat: r.LATITUDE,
+    lon: r.LONGITUDE,
+  })),
+  // координат у джерелі не було — дозаповнені через pnpm geocode:shelters
+  kropyvnytskyi: fromCsv("kropyvnytskyi_shelters.csv", "kropyvnytskyi", (r) => ({
+    id: r.registry_no,
+    type: r.type,
+    address: r.address,
+    city: "Кропивницький",
+    lat: r.lat,
+    lon: r.lon,
+  })),
+  // lat/lon у заголовку повторюються двічі, csv-parse бере останні
+  kyiv: fromCsv("kyiv_shelters.csv", "kyiv", (r) => ({
+    id: r.objectid,
+    type: r.type,
+    // у частини входів у метро адреси немає, лише координати
+    address: val(r.address) ?? r.title,
+    city: "Київ",
+    district: r.district,
+    lat: r.lat,
+    lon: r.lon,
+  })),
+  lutsk: fromCsv("lutsk_shelters_geocoded.csv", "lutsk", (r) => ({
+    // registry_no у джерелі місцями повторюється — дублі отримають суфікс
+    id: r.registry_no,
+    type: r.type,
+    // "м. Луцьк, вул. Рівненська, 76-А" → "вул. Рівненська, 76-А"
+    address: r.address?.replace(/^(м|с|смт)\.\s*[^,]+,\s*/u, ""),
+    city: placeName(r.settlement),
+    capacity: r.capacity,
+    lat: r.lat,
+    lon: r.lon,
+  })),
+  mykolaiv: fromCsv("mykolaiv_shelters.csv", "mykolaiv", (r) => ({
+    type: r.type,
+    address: r.address,
+    city: "Миколаїв",
+    capacity: r.capacity,
+    lat: r.lat,
+    lon: r.lon,
+  })),
+  odesa: fromCsv("odesa_shelters.csv", "odesa", (r) => ({
+    id: r.id,
+    type: val(r.category) ?? r.shelter_type,
+    address: r.address,
+    city: "Одеса",
+    district: r.district,
+    capacity: r.capacity,
+    lat: r.lat,
+    lon: r.lon,
+  })),
+  rivne: fromCsv("rivne_shelters.csv", "rivne", (r) => ({
+    id: r.registry_no,
+    type: r.type,
+    address: r.address,
+    city: "Рівне",
+    capacity: r.capacity_dsns,
+    lat: r.lat,
+    lon: r.lon,
+  })),
+  vinnytsia: fromCsv("vinnytsia_shelters.csv", "vinnytsia", (r) => ({
+    id: r.id,
+    // тип укриття не вказано, лише тип об'єкта (житлові приміщення УК, лікарня, ...)
+    type: r.kind,
+    address: r.address,
+    city: "Вінниця",
+    capacity: r.capacity,
+    lat: r.lat,
+    lon: r.lon,
+  })),
+  zaporizhzhia: fromCsv("zaporizhzhia_shelters.csv", "zaporizhzhia", (r) => ({
+    type: r.type,
+    address: r.address_clean,
+    city: "Запоріжжя",
+    capacity: r.capacity,
+    lat: r.lat,
+    lon: r.lon,
+  })),
+  zhytomyr: fromCsv("zhytomyr_shelters.csv", "zhytomyr", (r) => ({
+    id: r.registry_no,
+    type: zhytomyrType(r.layer),
+    address: r.address?.replace(/,\s*м\.\s*Житомир$/u, ""),
+    city: "Житомир",
+    capacity: r.capacity,
+    lat: r.lat,
+    lon: r.lon,
+  })),
+};
+
+/** Аргументи CLI → список джерел; без аргументів — усі */
+export function selectSources(args: string[]): string[] {
+  const unknown = args.filter((a) => !Object.hasOwn(SOURCES, a));
+  if (unknown.length > 0) {
+    throw new Error(
+      `Невідомі джерела: ${unknown.join(", ")}. Доступні: ${Object.keys(SOURCES).join(", ")}`,
+    );
+  }
+  return args.length > 0 ? [...new Set(args)] : Object.keys(SOURCES);
+}
+
+async function main(args: string[]) {
+  const selected = selectSources(args);
+  const db = createDb();
+
+  for (const source of selected) {
+    const rows = SOURCES[source]!();
     for (let i = 0; i < rows.length; i += BATCH_SIZE) {
       await db
         .insert(shelters)
@@ -153,5 +358,5 @@ async function main() {
 
 // запуск лише як скрипта (не при імпорті в тестах)
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  await main();
+  await main(process.argv.slice(2));
 }

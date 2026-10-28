@@ -13,7 +13,8 @@
     "test": "pnpm -r test",
     "db:generate": "pnpm --filter @alerts-shelters/db generate",
     "db:migrate": "pnpm --filter @alerts-shelters/db migrate",
-    "import:shelters": "pnpm --filter @alerts-shelters/worker import:shelters"
+    "import:shelters": "pnpm --filter @alerts-shelters/worker import:shelters",
+    "geocode:shelters": "pnpm --filter @alerts-shelters/worker geocode:shelters"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",

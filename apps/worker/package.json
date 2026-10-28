@@ -8,6 +8,7 @@
     "build": "tsup",
     "start": "node dist/index.js",
     "import:shelters": "tsx --env-file-if-exists=../../.env src/import-shelters.ts",
+    "geocode:shelters": "tsx src/geocode-shelters.ts",
     "typecheck": "tsc -p tsconfig.json",
     "test": "vitest run"
   },
