@@ -8,7 +8,7 @@ vi.mock("../src/services/shelterModel", () => ({
     getShelterDetailsService: vi.fn(),
 }));
 
-const shelter = { id: "1", city: "Київ", type: "bunker", address: "вул. Хрещатик, 1" };
+const shelter = { id: "1", city: "Київ", address: "вул. Хрещатик, 1" };
 
 beforeEach(() => {
     vi.clearAllMocks();
@@ -23,16 +23,16 @@ describe("GET /api/shelters", () => {
         const res = await request(app).get("/api/shelters");
 
         expect(res.status).toBe(200);
-        expect(res.body).toEqual({ data: [shelter] });
-        expect(getAllSheltersService).toHaveBeenCalledWith({ city: null, type: null });
+        expect(res.body).toEqual([shelter]);
+        expect(getAllSheltersService).toHaveBeenCalledWith({ city: null, address: null });
     });
 
-    it("passes city and type query params to the service", async () => {
+    it("passes city and address query params to the service", async () => {
         vi.mocked(getAllSheltersService).mockResolvedValue([shelter]);
 
-        await request(app).get("/api/shelters").query({ city: "Київ", type: "bunker" });
+        await request(app).get("/api/shelters").query({ city: "Київ", address: "вул. Хрещатик, 1" });
 
-        expect(getAllSheltersService).toHaveBeenCalledWith({ city: "Київ", type: "bunker" });
+        expect(getAllSheltersService).toHaveBeenCalledWith({ city: "Київ", address: "вул. Хрещатик, 1" });
     });
 
     it("returns 500 when the service fails", async () => {
@@ -52,7 +52,7 @@ describe("GET /api/shelters/:id", () => {
         const res = await request(app).get("/api/shelters/1");
 
         expect(res.status).toBe(200);
-        expect(res.body).toEqual({ data: [shelter] });
+        expect(res.body).toEqual([shelter]);
         expect(getShelterDetailsService).toHaveBeenCalledWith("1");
     });
 
@@ -62,7 +62,7 @@ describe("GET /api/shelters/:id", () => {
         const res = await request(app).get("/api/shelters/999");
 
         expect(res.status).toBe(200);
-        expect(res.body).toEqual({ data: [] });
+        expect(res.body).toEqual([]);
     });
 
     it("returns 500 when the service fails", async () => {

@@ -7,8 +7,8 @@ vi.mock("../src/services/regionModel", () => ({
     getAllRegionsService: vi.fn(),
 }));
 
-const oblast = { id: "kyivska", name: "Київська область", type: "oblast", parent_id: null };
-const city = { id: "kyiv", name: "Київ", type: "city", parent_id: "kyivska" };
+const oblast = { id: "kyivska", name: "Київська область", type: "oblast", parentId: null };
+const city = { id: "kyiv", name: "Київ", type: "city", parentId: "kyivska" };
 
 beforeEach(() => {
     vi.clearAllMocks();
@@ -22,7 +22,7 @@ describe("GET /api/regions", () => {
         const res = await request(app).get("/api/regions");
 
         expect(res.status).toBe(200);
-        expect(res.body).toEqual({ data: [oblast, city] });
+        expect(res.body).toEqual([oblast, city]);
         expect(getAllRegionsService).toHaveBeenCalledWith({ type: null, parent: null });
     });
 
@@ -32,7 +32,7 @@ describe("GET /api/regions", () => {
         const res = await request(app).get("/api/regions").query({ type: "city", parent: "kyivska" });
 
         expect(res.status).toBe(200);
-        expect(res.body).toEqual({ data: [city] });
+        expect(res.body).toEqual([city]);
         expect(getAllRegionsService).toHaveBeenCalledWith({ type: "city", parent: "kyivska" });
     });
 

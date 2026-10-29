@@ -22,9 +22,7 @@ export const getAllAlerts = async (req: Request, res: Response, next: NextFuncti
             limit: Math.min(Number(req.query.limit) || 1000, 10000)
         });
         // console.log("Total alerts: ", allAlerts.length)
-        res.status(200).json({
-            data: allAlerts
-        });
+        res.status(200).json(allAlerts);
     } catch (error) {
         next(error);
     }

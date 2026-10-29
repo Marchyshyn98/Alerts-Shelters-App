@@ -22,7 +22,7 @@ export const getShelterDetails = async (req: Request, res: Response, next: NextF
     try {
         const shelterDetails = await getShelterDetailsService(id);
 
-        res.status(200).json({ data: shelterDetails });
+        res.status(200).json(shelterDetails);
     } catch (error) {
         next(error);
     }

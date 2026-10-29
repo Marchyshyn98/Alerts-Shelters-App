@@ -8,8 +8,8 @@ vi.mock("../src/services/alertModel", () => ({
     getAllAlertsService: vi.fn(),
 }));
 
-const activeAlert = { id: 1, region_id: "kyiv", type: "air_raid", started_at: "2026-10-15T08:00:00Z", ended_at: null };
-const endedAlert = { ...activeAlert, id: 2, ended_at: "2026-10-15T09:00:00Z" };
+const activeAlert = { id: 1, regionId: "kyiv", regionName: "м. Київ", type: "air_raid", source: "alerts-in-ua", startedAt: "2026-10-15T08:00:00Z", endedAt: null };
+const endedAlert = { ...activeAlert, id: 2, endedAt: "2026-10-15T09:00:00Z" };
 
 beforeEach(() => {
     vi.clearAllMocks();
@@ -23,7 +23,7 @@ describe("GET /api/alerts/active", () => {
         const res = await request(app).get("/api/alerts/active");
 
         expect(res.status).toBe(200);
-        expect(res.body).toEqual({ data: [activeAlert] });
+        expect(res.body).toEqual([activeAlert]);
         expect(getActiveAlertsService).toHaveBeenCalledOnce();
     });
 
@@ -33,7 +33,7 @@ describe("GET /api/alerts/active", () => {
         const res = await request(app).get("/api/alerts/active");
 
         expect(res.status).toBe(200);
-        expect(res.body).toEqual({ data: [] });
+        expect(res.body).toEqual([]);
     });
 
     it("returns 500 when the service fails", async () => {
@@ -53,7 +53,7 @@ describe("GET /api/alerts", () => {
         const res = await request(app).get("/api/alerts");
 
         expect(res.status).toBe(200);
-        expect(res.body).toEqual({ data: [activeAlert, endedAlert] });
+        expect(res.body).toEqual([activeAlert, endedAlert]);
         expect(getAllAlertsService).toHaveBeenCalledWith({ region: null, type: null, limit: 1000 });
     });
 
