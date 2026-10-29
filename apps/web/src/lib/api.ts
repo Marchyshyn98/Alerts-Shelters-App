@@ -1,9 +1,11 @@
 import {
   AlertSchema,
+  HealthSchema,
   NearbyShelterSchema,
   RegionSchema,
   ShelterSchema,
   StatsSummarySchema,
+  type Health,
   type NearbySheltersQuery,
   type SheltersQuery,
 } from "@alerts-shelters/shared";
@@ -32,7 +34,15 @@ async function get<T>(path: string, schema: z.ZodType<T>, params?: object): Prom
   return schema.parse(await res.json());
 }
 
+/** 503 — теж валідна відповідь health (status: "down"), тому не кидаємо помилку, як у get() */
+async function getHealth(): Promise<Health> {
+  const res = await fetch(new URL("/v1/health", baseUrl()), { cache: "no-store" });
+  if (!res.ok && res.status !== 503) throw new Error(`API ${res.status}`);
+  return HealthSchema.parse(await res.json());
+}
+
 export const api = {
+  health: getHealth,
   activeAlerts: () => get("/alerts/active", z.array(AlertSchema)),
   regions: () => get("/regions", z.array(RegionSchema)),
   shelters: (q: Partial<SheltersQuery>) => get("/shelters", z.array(ShelterSchema), q),

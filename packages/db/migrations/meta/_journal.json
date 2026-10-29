@@ -22,6 +22,13 @@
       "when": 1791894041394,
       "tag": "0002_kyiv_timezone",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1793197214424,
+      "tag": "0003_sync_status",
+      "breakpoints": true
     }
   ]
 }

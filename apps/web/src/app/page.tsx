@@ -3,6 +3,7 @@
 import type { NearbyShelter } from "@alerts-shelters/shared";
 import { useEffect, useMemo, useState } from "react";
 import { AlertBadge } from "@/components/AlertBadge";
+import { HealthIndicator } from "@/components/HealthIndicator";
 import { Map } from "@/components/Map";
 import { useAlertsStream } from "@/hooks/useAlertsStream";
 import { useGeolocation } from "@/hooks/useGeolocation";
@@ -51,6 +52,7 @@ export default function HomePage() {
 
   return (
     <>
+      <HealthIndicator />
       <h1>Найближчі укриття</h1>
 
       <div className="form">

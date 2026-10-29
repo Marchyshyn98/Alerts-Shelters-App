@@ -1,4 +1,4 @@
-import { createDb } from "@alerts-shelters/db";
+import { createDb, sql, syncStatus } from "@alerts-shelters/db";
 import { createAlertsInUaSource } from "./sources/alerts-in-ua";
 import type { AlertSourceAdapter } from "./sources/types";
 import { syncAlerts } from "./sync-alerts";
@@ -32,12 +32,31 @@ async function tick() {
       try {
         const result = await syncAlerts(db, source);
         if (result.opened || result.closed) console.log(kyivTime.format(new Date()), result);
+        await recordSyncStatus(source.name, null);
       } catch (err) {
         console.error(`[${source.name}] sync failed:`, err);
+        await recordSyncStatus(source.name, err instanceof Error ? err.message : String(err));
       }
     }
   } finally {
     running = false;
+  }
+}
+
+/** Фіксує результат спроби синхронізації в sync_status (читає /v1/health) */
+async function recordSyncStatus(source: string, error: string | null) {
+  const success = error === null ? { lastSuccess: sql`now()` } : {};
+  try {
+    await db
+      .insert(syncStatus)
+      .values({ source, lastAttempt: sql`now()`, lastError: error, ...success })
+      .onConflictDoUpdate({
+        target: syncStatus.source,
+        set: { lastAttempt: sql`now()`, lastError: error, ...success },
+      });
+  } catch (err) {
+    // БД недоступна — статус не записати; /v1/health і так покаже down/degraded
+    console.error(`[${source}] failed to record sync status:`, err);
   }
 }
 

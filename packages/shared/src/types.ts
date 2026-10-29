@@ -14,3 +14,5 @@ export type NearbySheltersQuery = z.infer<typeof s.NearbySheltersQuerySchema>;
 export type SheltersQuery = z.infer<typeof s.SheltersQuerySchema>;
 export type StatsQuery = z.infer<typeof s.StatsQuerySchema>;
 export type StatsSummary = z.infer<typeof s.StatsSummarySchema>;
+export type HealthStatus = z.infer<typeof s.HealthStatusSchema>;
+export type Health = z.infer<typeof s.HealthSchema>;

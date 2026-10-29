@@ -10,6 +10,8 @@ export const dbConfig = {
   database: process.env.POSTGRES_DB,
   password: process.env.POSTGRES_PASSWORD,
   port: Number(process.env.POSTGRES_PORT) || 5432,
+  // без таймауту запит при недоступній БД висить безкінечно, і /v1/health не віддасть 503
+  connectionTimeoutMillis: 5000,
 }
 
 // Create a new instance of the Pool class with the database configuration

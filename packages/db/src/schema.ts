@@ -65,3 +65,12 @@ export const shelters = pgTable(
     index("shelters_city_idx").on(t.city),
   ],
 );
+
+/** Стан синхронізації тривог з кожним джерелом (пише worker, читає /v1/health) */
+export const syncStatus = pgTable("sync_status", {
+  /** назва джерела тривог: alerts-in-ua, ... */
+  source: text("source").primaryKey(),
+  lastSuccess: timestamp("last_success", { withTimezone: true }),
+  lastAttempt: timestamp("last_attempt", { withTimezone: true }),
+  lastError: text("last_error"),
+});
