@@ -5,11 +5,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const dbConfig = {
-  user: process.env.POSTGRES_USER,
-  host: process.env.POSTGRES_HOST,
-  database: process.env.POSTGRES_DB,
-  password: process.env.POSTGRES_PASSWORD,
-  port: Number(process.env.POSTGRES_PORT) || 5432,
+  connectionString: process.env.POSTGRES_DATABASE_URL,
   // без таймауту запит при недоступній БД висить безкінечно, і /v1/health не віддасть 503
   connectionTimeoutMillis: 5000,
 }

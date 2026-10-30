@@ -8,7 +8,8 @@ const app = express();
 
 // Middlewares
 app.use(express.json());
-app.use(cors());
+// CORS_ORIGIN — один origin або кілька через кому, без пробілів
+app.use(cors({ origin: process.env.CORS_ORIGIN?.split(",") ?? "http://localhost:3000" }));
 
 // Routes
 app.use("/api", routes);
